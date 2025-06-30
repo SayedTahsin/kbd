@@ -3,14 +3,14 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useForm, useField } from "vee-validate";
 import { useStore } from "vuex";
 import $axios from "../composables/axios";
-import LabeledSelect from "../design-system/components/Form/LabeledSelect/LabeledSelect.vue";
-import LabeledInput from "../design-system/components/Form/LabeledInput/LabeledInput.vue";
-import RadioGroup from "../design-system/components/Form/Radio/RadioGroup.vue";
-import Accordion from "../design-system/components/Accordion/Accordion.vue";
-import ToggleSwitch from "../design-system/components/Form/ToggleSwitch/ToggleSwitch.vue";
-import TextAreaAutoGrow from "../design-system/components/Form/TextArea/TextAreaAutoGrow.vue";
-import RcButton from "../design-system/components/RcButton/RcButton.vue";
-import StringList from "../design-system/components/StringList/StringList.vue";
+import LabeledSelect from "@rancher/shell/components/form/LabeledSelect.vue";
+import LabeledInput from "@rancher/shell/rancher-components/Form/LabeledInput/LabeledInput.vue";
+import RadioGroup from "@rancher/shell/rancher-components/Form/Radio/RadioGroup.vue";
+import Accordion from "@rancher/shell/rancher-components/Accordion/Accordion.vue";
+import ToggleSwitch from "@rancher/shell/rancher-components/Form/ToggleSwitch/ToggleSwitch.vue";
+import TextAreaAutoGrow from "@rancher/shell/rancher-components/Form/TextArea/TextAreaAutoGrow.vue";
+import RcButton from "@rancher/shell/rancher-components/RcButton/RcButton.vue";
+import StringList from "@rancher/shell/rancher-components/StringList/StringList.vue";
 import Preview from "./Preview.vue";
 
 const required = (value: unknown) => {
