@@ -147,7 +147,7 @@ const updateDbConfiguration = (e: string) => {
 const createPgInstance = async () => {
   const url = `/k8s/clusters/${clusterId.value}/apis/kubedb.com/v1alpha2/namespaces/${namespace.value}/postgreses`;
   try {
-    await $axios.post(url, payload);
+    await $axios.post(url, payload.value);
   } catch (e) {
     console.log(e);
   }
@@ -495,9 +495,9 @@ onMounted(() => {
           :disabled="disableNextBtn"
           >Previous</RcButton
         >
-        <RcButton primary @click="gotoNext" :disabled="disableNextBtn"
-          >Preview</RcButton
-        >
+        <RcButton primary @click="gotoNext" :disabled="disableNextBtn">{{
+          step === 1 ? "Preview" : "Deploy"
+        }}</RcButton>
       </div>
     </div>
   </div>
