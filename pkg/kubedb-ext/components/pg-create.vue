@@ -5,13 +5,14 @@ import { useStore } from "vuex";
 import $axios from "../composables/axios";
 import LabeledSelect from "@rancher/shell/components/form/LabeledSelect.vue";
 import LabeledInput from "@rancher/shell/rancher-components/Form/LabeledInput/LabeledInput.vue";
+import UnitInput from "@rancher/shell/components/form/UnitInput.vue";
 import RadioGroup from "@rancher/shell/rancher-components/Form/Radio/RadioGroup.vue";
 import Accordion from "@rancher/shell/rancher-components/Accordion/Accordion.vue";
 import ToggleSwitch from "@rancher/shell/rancher-components/Form/ToggleSwitch/ToggleSwitch.vue";
 import TextAreaAutoGrow from "@rancher/shell/rancher-components/Form/TextArea/TextAreaAutoGrow.vue";
 import RcButton from "@rancher/shell/rancher-components/RcButton/RcButton.vue";
-import StringList from "@rancher/shell/rancher-components/StringList/StringList.vue";
-import Preview from "./Preview.vue";
+import KeyValue from "@rancher/shell/components/form/KeyValue.vue";
+import YamlEditor from "@rancher/shell/components/YamlEditor.vue";
 
 const required = (value: unknown) => {
   if (!!value || value === 0) {
@@ -22,6 +23,35 @@ const required = (value: unknown) => {
     if (typeof value === "boolean" || typeof value === "number") return "";
   }
   return "This field is required";
+};
+
+const EDITOR_MODES = {
+  EDIT_CODE: "EDIT_CODE",
+  VIEW_CODE: "VIEW_CODE",
+  DIFF_CODE: "DIFF_CODE",
+};
+
+type KubeResource = {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name: string;
+    namespace: string;
+  };
+  spec: {
+    deletionPolicy: string;
+    storage: {
+      accessModes: string[];
+      resources: {
+        requests: {
+          storage: string;
+        };
+      };
+      storageClassName: string;
+    };
+    storageType: string;
+    version: string;
+  };
 };
 
 const store = useStore();
@@ -66,6 +96,8 @@ const { value: pitrName } = useField<string>("pitrName");
 const { value: alert } = useField<string>("alert");
 const { value: streamingMode } = useField<string>("streamingMode");
 const { value: issuer } = useField<string>("issuer");
+const { value: labels } = useField<Record<string, string>>("labels");
+const { value: annotations } = useField<Record<string, string>>("annotations");
 const { value: mode } = useField<string>("mode", "", {
   initialValue: "standalone",
 });
@@ -108,10 +140,12 @@ const previewTitle = computed(() => {
   return `Create Postgres: ${namespace.value}/${name.value}`;
 });
 
-const payload = computed(() => ({
+const payload = computed<KubeResource>(() => ({
   apiVersion: "kubedb.com/v1",
   kind: "Postgres",
   metadata: {
+    annotations: annotations.value,
+    labels: labels.value,
     name: name.value,
     namespace: namespace.value,
   },
@@ -140,8 +174,18 @@ watch(values, async () => {
 const updateMode = (e: string) => {
   mode.value = e;
 };
+const updateLabels = (e: Record<string, string>) => {
+  labels.value = e;
+};
+const updateAnnotations = (e: Record<string, string>) => {
+  annotations.value = e;
+};
 const updateDbConfiguration = (e: string) => {
   dbConfiguration.value = e;
+};
+const updatePayload = (e: KubeResource) => {
+  // payload.value = e;
+  console.log(e);
 };
 
 const createPgInstance = async () => {
@@ -198,8 +242,8 @@ onMounted(() => {
 
 <template>
   <div class="m-20">
+    <h1>{{ step === 1 ? "Create Postgres" : previewTitle }}</h1>
     <div v-if="step === 1">
-      <h1 class="">Create Postgres</h1>
       <div class="mb-20">
         <LabeledSelect
           v-model:value="clusterId"
@@ -294,24 +338,23 @@ onMounted(() => {
 
         <div class="row mb-20" v-if="isCustom">
           <div class="col span-6">
-            <LabeledInput
+            <UnitInput
               v-model:value="cpu"
+              placeholder="cpu limits"
               label="CPU"
-              placeholder=""
-              :disabled="false"
-              :min-height="30"
+              base-unit="core"
               :required="isCustom ? true : false"
+              :min="0"
             />
           </div>
-
           <div class="col span-6">
-            <LabeledInput
+            <UnitInput
               v-model:value="memory"
+              placeholder="memory limits"
               label="Memory"
-              placeholder=""
-              :disabled="false"
-              :min-height="30"
+              base-unit="Gi"
               :required="isCustom ? true : false"
+              :min="0"
             />
           </div>
         </div>
@@ -342,7 +385,35 @@ onMounted(() => {
 
       <!-- Advanced Configuration -->
       <Accordion title="Advanced Configuration" class="mb-20">
-        <!-- <StringList class="mb-20" /> -->
+        <div>
+          <Accordion title="Labels & Annotations" class="mb-20">
+            <h3>Labels</h3>
+            <KeyValue
+              class="mb-20"
+              key="labels"
+              :value="labels"
+              :protected-keys="[]"
+              :toggle-filter="true"
+              add-label="Add Labels"
+              :add-icon="''"
+              :read-allowed="false"
+              :value-can-be-empty="true"
+              @update:value="updateLabels"
+            />
+            <h3>Annotations</h3>
+            <KeyValue
+              class="mb-20"
+              key="Annotations"
+              :value="annotations"
+              add-label="Add Annotations"
+              :add-icon="''"
+              :read-allowed="false"
+              :value-can-be-empty="true"
+              @update:value="updateAnnotations"
+            />
+          </Accordion>
+        </div>
+
         <LabeledSelect
           class="mb-20"
           v-model:value="deletionPolicy"
@@ -408,12 +479,14 @@ onMounted(() => {
             v-model:value="pitrNamespace"
             label="Namespace"
             :min-height="30"
+            :required="isPitr ? true : false"
           />
           <LabeledInput
             class="mb-20"
             v-model:value="pitrName"
             label="Name"
             :min-height="30"
+            :required="isPitr ? true : false"
           />
         </div>
 
@@ -479,11 +552,17 @@ onMounted(() => {
         />
       </Accordion>
     </div>
-    <Preview
-      class="mb-20"
+    <h1></h1>
+    <YamlEditor
       v-if="step === 2"
-      :json-data="payload"
-      :title="previewTitle"
+      ref="yamleditor"
+      v-model:value="payload"
+      :mode="mode"
+      :asObject="true"
+      :initial-yaml-values="payload"
+      class="yaml-editor flex-content"
+      :editor-mode="EDITOR_MODES.EDIT_CODE"
+      @update:value="updatePayload"
     />
     <div class="button-container">
       <RcButton secondary>Cancel</RcButton>
