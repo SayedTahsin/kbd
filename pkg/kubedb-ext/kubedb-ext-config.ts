@@ -37,11 +37,11 @@ export function init($plugin: IPlugin, store: any) {
     },
   });
   virtualType({
-    label: "MongoDB",
+    label: "Overview",
     namespaced: false,
-    name: "MongoDB",
+    name: "Overview",
     route: {
-      name: `${YOUR_PRODUCT_NAME}-c-cluster-mongodb`,
+      name: `${YOUR_PRODUCT_NAME}-c-cluster-overview`,
       params: {
         product: YOUR_PRODUCT_NAME,
         cluster: BLANK_CLUSTER,
@@ -49,7 +49,7 @@ export function init($plugin: IPlugin, store: any) {
     },
   });
 
-  basicType(["PostgreSQL", "MongoDB"], "Databases");
-  // weightType("PostgreSQL", 2, true);
-  // weightType("MongoDB", 1, true);
+  basicType(["PostgreSQL", "Overview"], "Databases");
+  weightType("PostgreSQL", 1, true);
+  weightType("Overview", 2, true);
 }

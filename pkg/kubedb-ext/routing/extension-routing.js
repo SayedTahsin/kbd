@@ -1,7 +1,5 @@
-import MongoCreate from "../components/mongo-create.vue";
-import Overview from "../components/Overview.vue";
-import pgCreate from "../components/pg-create.vue";
-
+import Overview from "../pages/Overview.vue";
+import Postgres from "../pages/Postgres.vue";
 const BLANK_CLUSTER = "_";
 const YOUR_PRODUCT_NAME = "kubedb-ext";
 
@@ -19,16 +17,16 @@ const routes = [
   {
     name: `${YOUR_PRODUCT_NAME}-c-cluster-PostgreSQL`,
     path: `/${YOUR_PRODUCT_NAME}/c/:cluster/PostgreSQL`,
-    component: pgCreate,
+    component: Postgres,
     meta: {
       product: YOUR_PRODUCT_NAME,
       cluster: BLANK_CLUSTER,
     },
   },
   {
-    name: `${YOUR_PRODUCT_NAME}-c-cluster-mongodb`,
-    path: `/${YOUR_PRODUCT_NAME}/c/:cluster/mongodb`,
-    component: MongoCreate,
+    name: `${YOUR_PRODUCT_NAME}-c-cluster-overview`,
+    path: `/${YOUR_PRODUCT_NAME}/c/:cluster/overview`,
+    component: Overview,
     meta: {
       product: YOUR_PRODUCT_NAME,
       cluster: BLANK_CLUSTER,
