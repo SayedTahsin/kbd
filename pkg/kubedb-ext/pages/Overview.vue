@@ -1,58 +1,76 @@
 <script setup lang="ts">
 import SortableTable from "@rancher/shell/components/SortableTable/index.vue";
+import BadgeStateFormatter from "@rancher/shell/components/formatter/BadgeStateFormatter.vue";
+import ClusterProvider from "@rancher/shell/components/formatter/ClusterProvider.vue";
+
+const rows = [
+  {
+    dbName: "m1",
+    namespace: "demo",
+    type: "MongoDB",
+    mode: "Standalone",
+    version: "6.0.12",
+    replicas: "1",
+    cpu: "900m / 900m",
+    memory: "1Gi / 1Gi",
+    storage: "2Gi / 2Gi",
+    status: "Ready",
+    age: 20,
+    link: "/",
+  },
+];
 
 const headers = [
   {
-    name: "name",
-    label: "Name",
-    isColVisible: true,
-    isFilter: true,
-    sort: ["name"],
-  },
-  {
-    name: "description",
-    label: "Description",
-    isColVisible: true,
-    isFilter: true,
+    name: "dbName",
+    label: "Database Name",
+    value: "dbName",
   },
   {
     name: "type",
     label: "Type",
-    isColVisible: true,
-    isFilter: true,
-  },
-];
-
-const rows = [
-  {
-    name: "First row",
-    description: "This is the first row",
-    type: "first type",
+    value: "type",
   },
   {
-    name: "Second row",
-    description: "This is another row",
-    type: "first type",
+    name: "mode",
+    label: "Mode",
+    value: "mode",
   },
   {
-    name: "No description",
-    description: "",
-    type: "second type",
+    name: "version",
+    label: "Version",
+    value: "version",
   },
   {
-    name: "First row",
-    description: "This is the first row",
-    type: "first type",
+    name: "replicas",
+    label: "Replicas",
+    value: "replicas",
   },
   {
-    name: "Second row",
-    description: "This is another row",
-    type: "first type",
+    name: "cpu",
+    label: "CPU (request/limit)",
+    value: "cpu",
   },
   {
-    name: "No description",
-    description: "",
-    type: "second type",
+    name: "memory",
+    label: "Memory (request/limit)",
+    value: "memory",
+  },
+  {
+    name: "storage",
+    label: "Storage (request/limit)",
+    value: "storage",
+  },
+  {
+    name: "status",
+    label: "Status",
+    value: "status",
+  },
+  {
+    name: "age",
+    label: "Age",
+    value: "age",
+    sort: ["age"],
   },
 ];
 </script>
@@ -61,25 +79,31 @@ const rows = [
   <div>
     <h1>Hello</h1>
     <p><strong>Current route path:</strong> {{ $route.fullPath }}</p>
+    <RouterLink :to="`${$route.fullPath}/overview`">Go to Overview</RouterLink>
     <RouterLink :to="`${$route.fullPath}/postgreSQL`"
       >Go to PG-Create</RouterLink
     >
-    <br />
-    <RouterLink :to="`${$route.fullPath}/overview`"
-      >Go to Mongo-Create</RouterLink
-    >
 
     <SortableTable
-      :headers="headers"
+      default-sort-by="error"
+      :table-actions="false"
+      :row-actions="false"
       :rows="rows"
+      :headers="headers"
       paging
       :rowsPerPage="5"
       :loading="false"
-      :subSearch="true"
-      :tableAction="false"
-      :rowActions="false"
     >
-      <template #title><h1>Databases</h1></template>
+      <template #col:dbName="{ row }">
+        <td>
+          <router-link :to="row.link">
+            {{ row.dbName }}
+          </router-link>
+        </td>
+      </template>
+      <template #header-left>
+        <h1>Databases</h1>
+      </template>
     </SortableTable>
   </div>
 </template>
