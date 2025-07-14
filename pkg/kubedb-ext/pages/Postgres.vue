@@ -217,6 +217,7 @@ const getClusters = async () => {
     const result = await store.dispatch("management/findAll", {
       type: "management.cattle.io.cluster",
     });
+
     clusterIdList.value = result.map((ele: { id: string }) => {
       return ele.id;
     });
@@ -234,8 +235,8 @@ const gotoNext = () => {
 };
 
 onMounted(() => {
-  validate();
   getClusters();
+  validate();
   getPgList();
 });
 </script>

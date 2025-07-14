@@ -1,13 +1,22 @@
 <script setup lang="ts">
 import SortableTable from "@rancher/shell/components/SortableTable/index.vue";
 import BadgeStateFormatter from "@rancher/shell/components/formatter/BadgeStateFormatter.vue";
-import ClusterProvider from "@rancher/shell/components/formatter/ClusterProvider.vue";
+import ConsumptionGauge from "@rancher/shell/components/ConsumptionGauge.vue";
+import SimpleBox from "@rancher/shell/components/SimpleBox.vue";
+
+function getPercentage(a: number, b: number): string {
+  if (b === 0) {
+    return "Infinity%";
+  }
+  const percentage = (a / b) * 100;
+  return `${percentage.toFixed(2)}%`;
+}
 
 const rows = [
   {
-    dbName: "m1",
+    dbName: "pg1",
     namespace: "demo",
-    type: "MongoDB",
+    type: "PostgresSQL",
     mode: "Standalone",
     version: "6.0.12",
     replicas: "1",
@@ -77,12 +86,106 @@ const headers = [
 
 <template>
   <div>
-    <h1>Hello</h1>
+    <!-- <h1>Hello</h1>
     <p><strong>Current route path:</strong> {{ $route.fullPath }}</p>
     <RouterLink :to="`${$route.fullPath}/overview`">Go to Overview</RouterLink>
     <RouterLink :to="`${$route.fullPath}/postgreSQL`"
       >Go to PG-Create</RouterLink
-    >
+    > -->
+    <div class="simple-box-container">
+      <SimpleBox title="PostgresSQL" class="simple-box">
+        <ConsumptionGauge
+          class="mb-20"
+          :capacity="16"
+          :used="8"
+          units="cores"
+          :colorStops="{ 0: '--success', 30: '--warning', 70: '--error' }"
+        >
+          <template #title>
+            <span>
+              CPU
+              <span class="values text-muted"> 8/16 cores </span>
+            </span>
+            <span> {{ getPercentage(8, 16) }} </span>
+          </template>
+        </ConsumptionGauge>
+        <ConsumptionGauge
+          class="mb-20"
+          :capacity="4"
+          :used="1"
+          units="Gi"
+          :colorStops="{ 0: '--success', 30: '--warning', 70: '--error' }"
+        >
+          <template #title>
+            <span>
+              Memory
+              <span class="values text-muted"> 1/4 Gi </span>
+            </span>
+            <span> {{ getPercentage(1, 4) }} </span>
+          </template>
+        </ConsumptionGauge>
+        <ConsumptionGauge
+          :capacity="31"
+          :used="30"
+          units="Gi"
+          :colorStops="{ 0: '--success', 30: '--warning', 70: '--error' }"
+        >
+          <template #title>
+            <span>
+              Storage
+              <span class="values text-muted"> 30/31 Gi </span>
+            </span>
+            <span> {{ getPercentage(30, 31) }} </span>
+          </template>
+        </ConsumptionGauge>
+      </SimpleBox>
+      <SimpleBox title="PostgresSQL" class="simple-box">
+        <ConsumptionGauge
+          class="mb-20"
+          :capacity="16"
+          :used="8"
+          units="cores"
+          :colorStops="{ 0: '--success', 30: '--warning', 70: '--error' }"
+        >
+          <template #title>
+            <span>
+              CPU
+              <span class="values text-muted"> 8/16 cores </span>
+            </span>
+            <span> {{ getPercentage(8, 16) }} </span>
+          </template>
+        </ConsumptionGauge>
+        <ConsumptionGauge
+          class="mb-20"
+          :capacity="4"
+          :used="1"
+          units="Gi"
+          :colorStops="{ 0: '--success', 30: '--warning', 70: '--error' }"
+        >
+          <template #title>
+            <span>
+              Memory
+              <span class="values text-muted"> 1/4 Gi </span>
+            </span>
+            <span> {{ getPercentage(1, 4) }} </span>
+          </template>
+        </ConsumptionGauge>
+        <ConsumptionGauge
+          :capacity="31"
+          :used="30"
+          units="Gi"
+          :colorStops="{ 0: '--success', 30: '--warning', 70: '--error' }"
+        >
+          <template #title>
+            <span>
+              Storage
+              <span class="values text-muted"> 30/31 Gi </span>
+            </span>
+            <span> {{ getPercentage(30, 31) }} </span>
+          </template>
+        </ConsumptionGauge>
+      </SimpleBox>
+    </div>
 
     <SortableTable
       default-sort-by="error"
@@ -101,45 +204,32 @@ const headers = [
           </router-link>
         </td>
       </template>
+      <template #col:status="{ row }">
+        <td>
+          <BadgeStateFormatter
+            :value="row.status"
+            :row="rows"
+            :col="headers"
+            :arbitrary="true"
+          />
+        </td>
+      </template>
       <template #header-left>
-        <h1>Databases</h1>
+        <h1>Overview</h1>
       </template>
     </SortableTable>
   </div>
 </template>
-<!-- 
-[
-  {
-    "name": "name",
-    "label": "Name"
-  },
-  {
-    "name": "description",
-    "label": "Description"
-  },
-  {
-    "name": "type",
-    "label": "Type"
-  }
-]
- -->
 
-<!--
- [
-  {
-    "name": "First row",
-    "description": "This is the first row",
-    "type": "first type"
-  },
-  {
-    "name": "Second row",
-    "description": "This is another row",
-    "type": "first type"
-  },
-  {
-    "name": "No description",
-    "description": "",
-    "type": "second type"
-  }
-]
--->
+<style scoped>
+.simple-box-container {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.simple-box {
+  width: 300px;
+}
+</style>
