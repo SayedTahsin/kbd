@@ -1,0 +1,5 @@
+plugin/kubedb-ext-0.1.0.umd.min.60.js
+plugin/kubedb-ext-0.1.0.umd.min.60.js.map
+plugin/kubedb-ext-0.1.0.umd.min.js
+plugin/kubedb-ext-0.1.0.umd.min.js.map
+plugin/package.json

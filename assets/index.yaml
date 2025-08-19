@@ -1,0 +1,23 @@
+apiVersion: v1
+entries:
+  kubedb-ext:
+  - annotations:
+      catalog.cattle.io/certified: rancher
+      catalog.cattle.io/namespace: cattle-ui-plugin-system
+      catalog.cattle.io/os: linux
+      catalog.cattle.io/permits-os: linux, windows
+      catalog.cattle.io/rancher-version: '>= 2.10.0'
+      catalog.cattle.io/scope: management
+      catalog.cattle.io/ui-component: plugins
+      catalog.cattle.io/ui-extensions-version: '>= 3.0.0 < 4.0.0'
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-08-19T16:40:37.702570929+06:00"
+    description: kubedb-ext plugin
+    digest: 8d135bbe7516b114e9084535de8e0e1825b77090992a84a361dd65359c812b42
+    name: kubedb-ext
+    type: application
+    urls:
+    - assets/kubedb-ext/kubedb-ext-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-08-19T16:40:37.702339947+06:00"
